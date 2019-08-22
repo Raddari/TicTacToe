@@ -156,7 +156,7 @@ public class TicTacToe {
          */
         @Override
         public @NotNull String symbol() {
-            return this != StandardPlayer.NONE ? this.name() : " ";
+            return this == StandardPlayer.NONE ? " " : name();
         }
     }
 }
