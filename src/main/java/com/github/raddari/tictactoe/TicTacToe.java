@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * <p>TicTacToe - the game itself needs no explanation.
@@ -28,14 +26,18 @@ public class TicTacToe {
     private final int maxScore;
     /** Stores the moves of the players */
     private final Player[][] board;
-    /** Keep track of the win condition */
     private final Map<Player, Integer[]> winCondition;
+    /** Track the total amount of moves */
+    private int totalScore;
+    private Player winner;
     
     public TicTacToe(int boardSize) {
         this.boardSize = Parameters.requireGreater(boardSize, 2);
         this.board = new StandardPlayer[boardSize][boardSize];
         this.winCondition = new HashMap<>();
         this.maxScore = (2 * boardSize + 2) * boardSize;
+        this.totalScore = 0;
+        this.winner = null;
         
         initBoard();
     }
@@ -52,40 +54,25 @@ public class TicTacToe {
             return false;
         }
         board[row][col] = player;
-        updateCondition(player, row, col);
+        updateScore(player, row, col);
+        checkIfWinner(player);
         return true;
     }
     
     /**
-     * Checks if someone has won the game, or if there was a draw.
-     * @return {@code null} if the board isn't full and there isn't a winner<br />
-     *         {@link StandardPlayer#NONE} if the board is full and there isn't a winner
-     *         (aka a draw)<br />
-     *         otherwise, the winning player
+     * Check if the game has been won, or it's a draw.
+     * @return {@code true} if there is a winner or draw
      */
-    public @Nullable Player checkForWinner() {
-        // TODO: make this more efficient than n^2
-        var playerScores = winCondition.entrySet().stream()
-                                   .collect(Collectors.toMap(Map.Entry::getKey,
-                                           e -> Arrays.stream(e.getValue())
-                                                        .reduce(Integer::sum)));
-        
-        var totalScore = playerScores.values().stream()
-                                 .mapToInt(i -> i.orElse(0))
-                                 .sum();
-        // First check it's a draw
-        if (totalScore >= maxScore) {
-            return StandardPlayer.NONE;
-        }
-        // Then check if any of the players have won
-        for (var entry : winCondition.entrySet()) {
-            for (var i : entry.getValue()) {
-                if (i >= maxScore) {
-                    return entry.getKey();
-                }
-            }
-        }
-        return null;
+    public boolean hasWinner() {
+        return winner != null;
+    }
+    
+    /**
+     * Gets the winner of the game.
+     * @return the winner, or {@code null} if there isn't one
+     */
+    public @Nullable Player getWinner() {
+        return winner;
     }
     
     /**
@@ -123,20 +110,37 @@ public class TicTacToe {
         }
     }
     
-    private void updateCondition(@NotNull Player player, int row, int col) {
+    private void updateScore(@NotNull Player player, int row, int col) {
         ensurePlayer(player);
         var moves = winCondition.get(player);
         moves[row]++;
         moves[boardSize + col]++;
+        totalScore += 2;
         // Check diagonals
         // These start from the index boardSize * 2 in the win condition array
         if (row == col) {
             // We're on the right diagonal
             moves[2 * boardSize]++;
+            totalScore++;
         }
         if (row == boardSize - col - 1) {
             // We're on the left diagonal
             moves[2 * boardSize + 1]++;
+            totalScore++;
+        }
+    }
+    
+    private void checkIfWinner(@NotNull Player player) {
+        var moves = winCondition.get(player);
+        // Check for draw first, so it can be overwritten by a player winning
+        if (totalScore >= maxScore) {
+            winner = StandardPlayer.NONE;
+        }
+        for (var i : moves) {
+            if (i >= boardSize) {
+                winner = player;
+                break;
+            }
         }
     }
     

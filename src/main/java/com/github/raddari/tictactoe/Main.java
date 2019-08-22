@@ -20,12 +20,13 @@ public class Main {
         var game = new TicTacToe(3);
         Player nextPlayer = StandardPlayer.X;
         while (true) {
-            var winner = game.checkForWinner();
-            if (winner == null) {
+            if (!game.hasWinner()) {
                 // Keep playing
                 promptInput(nextPlayer, game);
                 nextPlayer = nextPlayer == StandardPlayer.X ? StandardPlayer.O : StandardPlayer.X;
             } else {
+                var winner = game.getWinner();
+                assert winner != null;
                 System.out.printf("Winner: %s%n", winner == StandardPlayer.NONE ? "Draw!" : winner.symbol());
                 return;
             }
