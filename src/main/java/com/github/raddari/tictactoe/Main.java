@@ -27,7 +27,12 @@ public class Main {
             } else {
                 var winner = game.getWinner();
                 assert winner != null;
-                System.out.printf("Winner: %s%n", winner == StandardPlayer.NONE ? "Draw!" : winner.symbol());
+                System.out.println(game.boardAsString());
+                if (winner == StandardPlayer.NONE) {
+                    System.out.println("Draw!");
+                } else {
+                    System.out.printf("Winner: %s%n", winner.symbol());
+                }
                 return;
             }
         }
@@ -41,17 +46,21 @@ public class Main {
             System.out.printf("Player %s, please enter the row and column where you want to play%n", player.symbol());
             System.out.println("For example: 1 3 for the first row, third column");
             
-            try {
-                var tokens = sc.nextLine().split(" ");
-                int row = Integer.parseInt(tokens[0]);
-                int col = Integer.parseInt(tokens[1]);
-                if (!game.playAt(player, row - 1, col - 1)) {
-                    System.out.println("A player has already played there, or the position is off the grid!");
-                    validInput = false;
-                }
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            var tokens = sc.nextLine().split(" ");
+            if (tokens.length != 2) {
                 System.out.println("Invalid input");
                 validInput = false;
+            } else {
+                try {
+                    var row = Integer.parseInt(tokens[0]);
+                    var col = Integer.parseInt(tokens[1]);
+                    if (!game.playAt(player, row - 1, col - 1)) {
+                        System.out.println("A player has already played there, or the position is off the grid!");
+                        validInput = false;
+                    }
+                } catch (NumberFormatException e) {
+                    validInput = false;
+                }
             }
         } while (!validInput);
         System.out.println();
