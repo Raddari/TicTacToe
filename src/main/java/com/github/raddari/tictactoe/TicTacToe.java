@@ -44,7 +44,7 @@ public final class TicTacToe {
     
     /**
      * Attempts to set the specified row and column of the board to the given player.
-     * @param player {@link StandardPlayer} to set at the location
+     * @param player {@link Player} to set at the location
      * @param row row number
      * @param col column number
      * @return {@code true} if a player can play that location
