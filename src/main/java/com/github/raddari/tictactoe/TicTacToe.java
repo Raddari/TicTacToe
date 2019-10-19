@@ -33,7 +33,7 @@ public final class TicTacToe {
     
     public TicTacToe(int boardSize) {
         this.boardSize = Parameters.requireGreater(boardSize, 2);
-        this.board = new StandardPlayer[boardSize][boardSize];
+        this.board = new Player[boardSize][boardSize];
         this.winCondition = new HashMap<>();
         this.maxScore = (2 * boardSize + 2) * boardSize;
         this.totalScore = 0;
