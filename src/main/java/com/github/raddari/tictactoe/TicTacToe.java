@@ -18,7 +18,7 @@ import java.util.Map;
  * <p>The nested {@link StandardPlayer} enum contains the symbols for two players.
  * The value {@link StandardPlayer#NONE} should be used to represent an empty space.
  */
-public class TicTacToe {
+public final class TicTacToe {
     
     /** Horizontal and vertical positions on the board */
     private final int boardSize;
